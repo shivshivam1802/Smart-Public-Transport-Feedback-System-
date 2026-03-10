@@ -68,13 +68,153 @@ def get_db():
 
 UI_HTML = """
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>Smart Transport Feedback</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Transport Feedback</title>
+  <style>
+    :root{
+      --bg1:#0b1220; --bg2:#0f1b33;
+      --card:#0f203d; --card2:#101a30;
+      --text:#e8eefc; --muted:#a9b7d0;
+      --accent:#6ee7ff; --accent2:#8b5cf6;
+      --border:rgba(255,255,255,.10);
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      color:var(--text);
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(139,92,246,.35), transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(110,231,255,.25), transparent 55%),
+                  linear-gradient(160deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:980px; margin:0 auto; padding:36px 18px 56px}
+    .hero{
+      border:1px solid var(--border);
+      background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 28px 22px;
+      overflow:hidden;
+      position:relative;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 4px rgba(110,231,255,.12);
+    }
+    h1{margin:14px 0 8px; font-size: 28px; line-height:1.15}
+    p{margin:0; color:var(--muted); line-height:1.6}
+    .grid{display:grid; gap:14px; margin-top:18px}
+    @media (min-width: 860px){ .grid{grid-template-columns: 1.15fr .85fr} h1{font-size:34px} }
+    .card{
+      border:1px solid var(--border);
+      background: rgba(16,26,48,.55);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .card h2{margin:0 0 6px; font-size:16px}
+    .actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding:12px 14px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.18);
+      font-weight: 600;
+      letter-spacing:.2px;
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+    }
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.18)}
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(110,231,255,.20), rgba(139,92,246,.20));
+      border-color: rgba(110,231,255,.25);
+    }
+    .kpi{display:grid; gap:10px; margin-top:12px}
+    .kpi .item{
+      padding:12px 12px; border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.14);
+    }
+    .kpi .item b{display:block; font-size:13px}
+    .kpi .item span{display:block; color:var(--muted); font-size:13px; margin-top:4px}
+    footer{margin-top:16px; color:rgba(233,238,252,.55); font-size:12px}
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      padding:2px 6px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.18);
+      color: rgba(232,238,252,.92);
+    }
+  </style>
+</head>
 <body>
-<h1>Smart Public Transport Feedback System</h1>
-<p><a href="/docs">API Docs (/docs)</a></p>
-<p><a href="/api">API Info (/api)</a></p>
-<p><a href="/demo/entry">Data Entry (jada data daalein)</a> | <a href="/demo">Demo</a></p>
+  <main class="wrap">
+    <section class="hero">
+      <div class="badge"><span class="dot"></span> FastAPI • Geo-tagged feedback • Hotspot analytics</div>
+      <h1>Smart Public Transport Feedback System</h1>
+      <p>
+        Submit transport feedback with latitude/longitude, view sentiment & issue categories, and detect complaint hotspots using DBSCAN.
+      </p>
+      <div class="actions" aria-label="Quick links">
+        <a class="btn primary" href="/demo">Open Demo</a>
+        <a class="btn" href="/demo/submit">Submit Feedback</a>
+        <a class="btn" href="/demo/dashboard">Dashboard</a>
+        <a class="btn" href="/docs">API Docs</a>
+        <a class="btn" href="/api">API Info</a>
+      </div>
+      <footer>
+        Tip: For data entry view, open <code>/demo/entry</code>. For analytics JSON, use <code>/analytics/summary</code> and <code>/analytics/clusters</code>.
+      </footer>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>What you can do</h2>
+        <p>Use the demo UI for viva/presentation, or call the API directly.</p>
+        <div class="kpi">
+          <div class="item">
+            <b>Demo flow</b>
+            <span><code>/demo</code> → <code>/demo/dashboard</code> → <code>/demo/submit</code></span>
+          </div>
+          <div class="item">
+            <b>Submit feedback</b>
+            <span>POST <code>/feedback</code> with <code>text</code>, <code>latitude</code>, <code>longitude</code></span>
+          </div>
+          <div class="item">
+            <b>Refresh hotspots</b>
+            <span>POST <code>/admin/update-clusters</code> (DBSCAN)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Quick start</h2>
+        <p>Run locally with:</p>
+        <p style="margin-top:10px">
+          <code>pip install -r backend/requirements.txt</code><br/>
+          <code>python -m uvicorn backend.main:app --reload</code>
+        </p>
+        <p style="margin-top:12px">Then open <code>http://127.0.0.1:8000</code></p>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
 """
