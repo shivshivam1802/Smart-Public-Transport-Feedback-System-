@@ -203,16 +203,6 @@ UI_HTML = """
           </div>
         </div>
       </div>
-
-      <div class="card">
-        <h2>Quick start</h2>
-        <p>Run locally with:</p>
-        <p style="margin-top:10px">
-          <code>pip install -r backend/requirements.txt</code><br/>
-          <code>python -m uvicorn backend.main:app --reload</code>
-        </p>
-        <p style="margin-top:12px">Then open <code>http://127.0.0.1:8000</code></p>
-      </div>
     </section>
   </main>
 </body>
