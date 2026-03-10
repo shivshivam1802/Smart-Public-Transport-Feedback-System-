@@ -5,46 +5,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard – Smart Transport Feedback</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem; background: #f5f5f5; }
-    h1 { font-size: 1.35rem; margin-top: 0; }
-    a { color: #1a73e8; }
-    .card { background: #fff; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .stat { font-size: 1.5rem; font-weight: 700; color: #1a73e8; }
-    .row { display: flex; flex-wrap: wrap; gap: 1rem; }
-    .row > * { flex: 1; min-width: 200px; }
-    #map { height: 300px; border-radius: 8px; }
-    .bar-wrap { background: #eee; border-radius: 4px; height: 24px; margin: 0.25rem 0; overflow: hidden; }
-    .bar { height: 100%; background: #1a73e8; border-radius: 4px; }
-    ul { margin: 0; padding-left: 1.2rem; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #f5f7fa 100%);
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(90deg, #1e3a5f 0%, #2563eb 100%);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 2px 12px rgba(30,58,95,0.25);
+    }
+    .header-inner { max-width: 960px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.75rem; }
+    .header h1 { margin:0; font-size:1.25rem; font-weight:700; letter-spacing:-0.02em; }
+    .header a { color: rgba(255,255,255,0.95); text-decoration:none; font-size:0.9rem; }
+    .container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem 2.5rem; }
+    .sub { margin:0 0 1.2rem; color:#5f6368; font-size:0.9rem; }
+    .card {
+      background:#fff;
+      border-radius:14px;
+      padding:1.25rem 1.5rem;
+      margin-bottom:1.25rem;
+      box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 3px rgba(0,0,0,0.04);
+      border:1px solid rgba(0,0,0,0.05);
+    }
+    .card strong { display:block; margin-bottom:0.4rem; color:#1e3a5f; }
+    .stat { font-size: 1.8rem; font-weight: 700; color: #2563eb; }
+    .row { display:flex; flex-wrap:wrap; gap:1rem; }
+    .row > * { flex:1; min-width:240px; }
+    #map { height: 320px; border-radius: 12px; }
+    .bar-wrap { background:#e5e7eb; border-radius:999px; height: 22px; margin: 0.25rem 0; overflow:hidden; }
+    .bar { height: 100%; background: linear-gradient(90deg,#2563eb,#1d4ed8); border-radius:999px; }
+    .bars span { display:block; font-size:0.9rem; margin-bottom:0.1rem; color:#4b5563; }
+    ul { margin: 0.4rem 0 0; padding-left: 1.2rem; color:#374151; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+      background:#f1f5f9;
+      padding:0.15rem 0.4rem;
+      border-radius:6px;
+    }
   </style>
 </head>
 <body>
-  <p><a href="/demo">← Back to Demo Home</a></p>
-  <h1>Analytics Dashboard</h1>
-  <p>Data from <code>GET /analytics/summary</code> and <code>GET /analytics/clusters</code>.</p>
-
-  <div class="card">
-    <strong>Total feedback</strong>
-    <div class="stat" id="total">–</div>
-  </div>
-
-  <div class="row">
-    <div class="card" style="flex: 1;">
-      <strong>Sentiment (BERT)</strong>
-      <div id="sentiment-bars"></div>
+  <header class="header">
+    <div class="header-inner">
+      <a href="/demo">← Demo Home</a>
+      <h1>Analytics Dashboard</h1>
     </div>
-    <div class="card" style="flex: 1;">
-      <strong>Issue-wise counts (multi-label)</strong>
-      <div id="issue-bars"></div>
-    </div>
-  </div>
+  </header>
 
-  <div class="card">
-    <strong>Complaint hotspots (DBSCAN clusters)</strong>
-    <div id="map"></div>
-    <p id="no-clusters" style="display:none;">No clusters yet. Run <code>POST /admin/update-clusters</code> after adding feedback.</p>
-    <ul id="cluster-list"></ul>
+  <div class="container">
+    <p class="sub">Data from <code>GET /analytics/summary</code> and <code>GET /analytics/clusters</code>.</p>
+
+    <div class="card">
+      <strong>Total feedback</strong>
+      <div class="stat" id="total">–</div>
+    </div>
+
+    <div class="row">
+      <div class="card" style="flex: 1;">
+        <strong>Sentiment overview</strong>
+        <div id="sentiment-bars" class="bars"></div>
+      </div>
+      <div class="card" style="flex: 1;">
+        <strong>Issue-wise counts</strong>
+        <div id="issue-bars" class="bars"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>Complaint hotspots (DBSCAN clusters)</strong>
+      <div id="map"></div>
+      <p id="no-clusters" style="display:none;">No clusters yet. Run <code>POST /admin/update-clusters</code> after adding feedback.</p>
+      <ul id="cluster-list"></ul>
+    </div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
