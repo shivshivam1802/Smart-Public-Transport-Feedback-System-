@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Feedback – Smart Transport Feedback</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.35rem; }
+    label { display: block; margin-top: 0.75rem; font-weight: 500; }
+    input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.25rem; box-sizing: border-box; }
+    button { margin-top: 1rem; padding: 0.5rem 1.25rem; background: #1a73e8; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    button:disabled { opacity: 0.6; }
+    .result { margin-top: 1rem; padding: 1rem; border-radius: 8px; }
+    .result.success { background: #e6f4ea; border: 1px solid #34a853; }
+    .result.error { background: #fce8e6; border: 1px solid #ea4335; }
+    .result strong { display: block; margin-bottom: 0.5rem; }
+    .issues { margin-top: 0.5rem; }
+    .tag { display: inline-block; padding: 0.2rem 0.5rem; background: #e8f0fe; border-radius: 4px; margin: 0.2rem; font-size: 0.9rem; }
+    a { color: #1a73e8; }
+  </style>
+</head>
+<body>
+  <p><a href="/demo">← Back to Demo Home</a></p>
+  <h1>Submit feedback</h1>
+  <p>Calls <code>POST /feedback</code>. Backend runs BERT sentiment and multi-label issue detection.</p>
+  <form id="f">
+    <label>Complaint (textarea)</label>
+    <textarea id="text" name="text" rows="4" placeholder="e.g. Bus was very late and seats were dirty. Driver was rude." required></textarea>
+    <label>Latitude</label>
+    <input type="number" id="lat" name="latitude" step="any" placeholder="e.g. 30.7333" required>
+    <label>Longitude</label>
+    <input type="number" id="lon" name="longitude" step="any" placeholder="e.g. 76.7794" required>
+    <button type="submit" id="btn">Submit</button>
+  </form>
+  <div id="out" class="result" style="display:none;"></div>
+
+  <script>
+    document.getElementById('f').onsubmit = function(e) {
+      e.preventDefault();
+      var btn = document.getElementById('btn');
+      var out = document.getElementById('out');
+      out.style.display = 'block';
+      out.className = 'result';
+      out.innerHTML = 'Submitting…';
+      btn.disabled = true;
+      fetch(window.location.origin + '/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: document.getElementById('text').value,
+          latitude: parseFloat(document.getElementById('lat').value),
+          longitude: parseFloat(document.getElementById('lon').value)
+        })
+      })
+      .then(r => r.json())
+      .then(d => {
+        out.className = 'result success';
+        out.innerHTML = '<strong>Submitted.</strong> Sentiment: <strong>' + (d.sentiment || '') + '</strong>. Issues: <span class="issues">' +
+          (d.issues && d.issues.length ? d.issues.map(i => '<span class="tag">' + i + '</span>').join('') : 'None detected') + '</span>';
+      })
+      .catch(err => {
+        out.className = 'result error';
+        out.innerHTML = '<strong>Error</strong> ' + (err.message || 'Request failed');
+      })
+      .finally(function() { btn.disabled = false; });
+    };
+  </script>
+</body>
+</html>

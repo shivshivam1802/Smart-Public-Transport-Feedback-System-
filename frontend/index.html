@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Transport Feedback</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-inner">
+        <div class="logo-wrap">
+          <span class="logo-icon" aria-hidden="true">◆</span>
+          <div>
+            <h1 class="logo">Smart Transport Feedback</h1>
+            <p class="tagline">Sentiment & issue detection for public transport</p>
+          </div>
+        </div>
+        <nav class="nav">
+          <a href="#submit" class="nav-link active">Submit</a>
+          <a href="#analytics" class="nav-link">Analytics</a>
+          <a href="#hotspots" class="nav-link">Hotspots</a>
+          <a href="#recent" class="nav-link">Recent</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main">
+      <section id="submit" class="section hero-card">
+        <div class="hero-text">
+          <h2>Share your experience</h2>
+          <p>Your feedback is analyzed in real time with BERT for sentiment and multi-label issues (delay, overcrowding, cleanliness, staff, safety, infrastructure).</p>
+        </div>
+        <form id="feedback-form" class="feedback-form card">
+          <div class="form-group">
+            <label for="feedback-text">Your feedback</label>
+            <textarea id="feedback-text" name="text" rows="4" placeholder="e.g. Bus was very late and the seats were dirty. Driver was rude." required></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="lat">Latitude</label>
+              <input type="number" id="lat" name="latitude" step="any" placeholder="e.g. 30.7333" required>
+            </div>
+            <div class="form-group">
+              <label for="lon">Longitude</label>
+              <input type="number" id="lon" name="longitude" step="any" placeholder="e.g. 76.7794" required>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" id="use-location" class="btn btn-secondary">
+              <span class="btn-icon">📍</span> Use my location
+            </button>
+            <button type="submit" id="submit-btn" class="btn btn-primary">
+              <span class="btn-icon">→</span> Submit feedback
+            </button>
+          </div>
+          <div id="submit-result" class="result-box hidden" aria-live="polite"></div>
+        </form>
+      </section>
+
+      <section id="analytics" class="section">
+        <div class="section-header">
+          <h2>Analytics overview</h2>
+          <button type="button" id="refresh-analytics" class="btn btn-ghost" title="Refresh">↻ Refresh</button>
+        </div>
+        <p class="section-desc">Counts by sentiment and issue type.</p>
+        <div id="analytics-loading" class="loading-state">Loading analytics…</div>
+        <div id="analytics-content" class="analytics-grid hidden"></div>
+      </section>
+
+      <section id="hotspots" class="section">
+        <div class="section-header">
+          <h2>Hotspots</h2>
+          <button type="button" id="refresh-hotspots" class="btn btn-ghost" title="Refresh">↻ Refresh</button>
+        </div>
+        <p class="section-desc">High-density complaint areas (DBSCAN clusters).</p>
+        <div id="hotspots-loading" class="loading-state">Loading…</div>
+        <div id="hotspots-content" class="hotspots-list hidden"></div>
+        <p id="hotspots-empty" class="empty-state hidden">No clusters yet. Submit feedback, then run <code>POST /admin/update-clusters</code> to refresh.</p>
+      </section>
+
+      <section id="recent" class="section">
+        <div class="section-header">
+          <h2>Recent feedback</h2>
+          <button type="button" id="refresh-recent" class="btn btn-ghost" title="Refresh">↻ Refresh</button>
+        </div>
+        <div id="recent-loading" class="loading-state">Loading…</div>
+        <div id="recent-content" class="recent-list hidden"></div>
+        <p id="recent-empty" class="empty-state hidden">No feedback yet. Submit one above.</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Smart Public Transport Feedback System · BERT · Multi-label · DBSCAN</p>
+      <p class="footer-links"><a href="/docs" target="_blank" rel="noopener">API Docs</a> · <a href="/api" target="_blank" rel="noopener">API Info</a></p>
+    </footer>
+  </div>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

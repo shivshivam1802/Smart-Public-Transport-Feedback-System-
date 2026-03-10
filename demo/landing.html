@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Public Transport Feedback System – Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #f5f7fa 100%); min-height: 100vh; }
+    .header { background: linear-gradient(90deg, #1e3a5f 0%, #2563eb 100%); color: #fff; padding: 1rem 1.5rem; box-shadow: 0 2px 12px rgba(30, 58, 95, 0.25); }
+    .header-inner { max-width: 720px; margin: 0 auto; }
+    .header h1 { margin: 0; font-size: 1.35rem; font-weight: 700; }
+    .container { max-width: 720px; margin: 0 auto; padding: 2rem 1rem; }
+    .card { background: #fff; border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05); }
+    h2 { margin: 0 0 1rem; font-size: 1.1rem; color: #1e3a5f; }
+    ul { margin: 0.5rem 0; padding-left: 1.25rem; line-height: 1.7; color: #3c4043; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+    .links a { display: inline-block; padding: 0.65rem 1.2rem; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3); transition: box-shadow 0.2s; }
+    .links a:hover { box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); }
+    .links a.secondary { background: #f1f5f9; color: #1e40af; box-shadow: none; }
+    .links a.secondary:hover { background: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1>Smart Public Transport Feedback System</h1>
+    </div>
+  </header>
+  <div class="container">
+    <div class="card">
+      <h2>Demo Home</h2>
+      <p><strong>Final-year project</strong> – Geo-tagged complaints with NLP and ML.</p>
+      <ul>
+        <li><strong>BERT sentiment</strong> – Positive / negative classification.</li>
+        <li><strong>Multi-label issues</strong> – Delay, overcrowding, cleanliness, staff, safety, infrastructure.</li>
+        <li><strong>DBSCAN clustering</strong> – Complaint hotspots from lat/lon.</li>
+      </ul>
+      <div class="links">
+        <a href="/demo/entry">Data Entry</a>
+        <a href="/demo/dashboard">Dashboard</a>
+        <a href="/demo/submit">Submit feedback</a>
+        <a href="/docs" class="secondary">API Docs</a>
+        <a href="/api" class="secondary">API Info</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

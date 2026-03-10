@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Smart Transport Feedback</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem; background: #f5f5f5; }
+    h1 { font-size: 1.35rem; margin-top: 0; }
+    a { color: #1a73e8; }
+    .card { background: #fff; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .stat { font-size: 1.5rem; font-weight: 700; color: #1a73e8; }
+    .row { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .row > * { flex: 1; min-width: 200px; }
+    #map { height: 300px; border-radius: 8px; }
+    .bar-wrap { background: #eee; border-radius: 4px; height: 24px; margin: 0.25rem 0; overflow: hidden; }
+    .bar { height: 100%; background: #1a73e8; border-radius: 4px; }
+    ul { margin: 0; padding-left: 1.2rem; }
+  </style>
+</head>
+<body>
+  <p><a href="/demo">← Back to Demo Home</a></p>
+  <h1>Analytics Dashboard</h1>
+  <p>Data from <code>GET /analytics/summary</code> and <code>GET /analytics/clusters</code>.</p>
+
+  <div class="card">
+    <strong>Total feedback</strong>
+    <div class="stat" id="total">–</div>
+  </div>
+
+  <div class="row">
+    <div class="card" style="flex: 1;">
+      <strong>Sentiment (BERT)</strong>
+      <div id="sentiment-bars"></div>
+    </div>
+    <div class="card" style="flex: 1;">
+      <strong>Issue-wise counts (multi-label)</strong>
+      <div id="issue-bars"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>Complaint hotspots (DBSCAN clusters)</strong>
+    <div id="map"></div>
+    <p id="no-clusters" style="display:none;">No clusters yet. Run <code>POST /admin/update-clusters</code> after adding feedback.</p>
+    <ul id="cluster-list"></ul>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script>
+    (function() {
+      const api = window.location.origin;
+
+      function drawBars(containerId, data, maxVal) {
+        const el = document.getElementById(containerId);
+        el.innerHTML = '';
+        const m = maxVal || Math.max(0, ...Object.values(data));
+        for (const [k, v] of Object.entries(data)) {
+          const pct = m ? (v / m * 100) : 0;
+          const div = document.createElement('div');
+          div.innerHTML = '<span>' + k + ': ' + v + '</span><div class="bar-wrap"><div class="bar" style="width:' + pct + '%"></div></div>';
+          el.appendChild(div);
+        }
+      }
+
+      fetch(api + '/analytics/summary')
+        .then(r => r.json())
+        .then(d => {
+          document.getElementById('total').textContent = d.total_feedback || 0;
+          drawBars('sentiment-bars', d.by_sentiment || {}, null);
+          drawBars('issue-bars', d.by_issue || {}, null);
+        })
+        .catch(() => { document.getElementById('total').textContent = 'Error'; });
+
+      fetch(api + '/analytics/clusters')
+        .then(r => r.json())
+        .then(clusters => {
+          const listEl = document.getElementById('cluster-list');
+          const noEl = document.getElementById('no-clusters');
+          if (!clusters || clusters.length === 0) {
+            noEl.style.display = 'block';
+            return;
+          }
+          clusters.forEach(c => {
+            const li = document.createElement('li');
+            li.textContent = 'Cluster ' + c.cluster_id + ': ' + c.count + ' complaints, center (' + c.center_lat.toFixed(4) + ', ' + c.center_lon.toFixed(4) + '). Top: ' + (c.top_issues || []).join(', ');
+            listEl.appendChild(li);
+          });
+          var map = L.map('map').setView([clusters[0].center_lat, clusters[0].center_lon], 12);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+          clusters.forEach(c => {
+            L.marker([c.center_lat, c.center_lon]).addTo(map).bindPopup('Cluster ' + c.cluster_id + ': ' + c.count + ' – ' + (c.top_issues || []).join(', '));
+          });
+        })
+        .catch(() => { document.getElementById('no-clusters').style.display = 'block'; });
+    })();
+  </script>
+</body>
+</html>

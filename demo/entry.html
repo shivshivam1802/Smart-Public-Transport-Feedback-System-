@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Entry – Smart Transport Feedback</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #f5f7fa 100%);
+      min-height: 100vh;
+      color: #1a1d24;
+    }
+    .header {
+      background: linear-gradient(90deg, #1e3a5f 0%, #2563eb 100%);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 2px 12px rgba(30, 58, 95, 0.25);
+    }
+    .header-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .header h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+    .header-nav { display: flex; gap: 1rem; align-items: center; }
+    .header-nav a { color: rgba(255,255,255,0.95); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 0.4rem 0.7rem; border-radius: 6px; transition: background 0.2s; }
+    .header-nav a:hover { background: rgba(255,255,255,0.15); }
+    .container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
+    .page-title { font-size: 1.25rem; font-weight: 600; margin: 0 0 0.25rem; color: #1a1d24; }
+    .sub { color: #5f6368; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .card h2 { margin: 0 0 1rem; font-size: 1.05rem; font-weight: 600; color: #1e3a5f; }
+    label { display: block; font-weight: 600; margin-bottom: 0.4rem; color: #3c4043; font-size: 0.9rem; }
+    input, textarea {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 1px solid #dadce0;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .row .field { flex: 1; min-width: 160px; }
+    .btn {
+      padding: 0.65rem 1.35rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.05s, box-shadow 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35); }
+    .btn-primary:hover { box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); }
+    .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+    .btn-secondary { background: #f1f5f9; color: #1e40af; border: 1px solid #e2e8f0; }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.25rem; }
+    .msg {
+      margin-top: 1rem;
+      padding: 0.9rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+    .msg.ok { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #a7f3d0; color: #065f46; }
+    .msg.err { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 1px solid #fecaca; color: #991b1b; }
+    .msg .tag { display: inline-block; padding: 0.25rem 0.55rem; background: #dbeafe; border-radius: 6px; margin: 0.15rem; font-size: 0.8rem; font-weight: 500; color: #1e40af; }
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #f1f5f9; }
+    th { background: #f8fafc; font-weight: 600; color: #475569; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: #f8fafc; }
+    .sentiment { font-weight: 600; text-transform: capitalize; }
+    .sentiment.positive { color: #059669; }
+    .sentiment.negative { color: #dc2626; }
+    .issues-cell { font-size: 0.85rem; }
+    .small-tag { padding: 0.2rem 0.5rem; background: #e0e7ff; border-radius: 5px; margin: 0.1rem; font-size: 0.75rem; font-weight: 500; color: #3730a3; display: inline-block; }
+    .toolbar { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .toolbar .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+    #loading { color: #64748b; padding: 1rem 0; margin: 0; }
+    .empty-row { color: #64748b; font-style: italic; padding: 1.5rem !important; text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1>Smart Transport Feedback – Data Entry</h1>
+      <nav class="header-nav">
+        <a href="/demo/entry">Data Entry</a>
+        <a href="/demo/dashboard">Dashboard</a>
+        <a href="/demo">Demo Home</a>
+        <a href="/docs">API Docs</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <p class="page-title">Naya feedback daalein</p>
+    <p class="sub">Complaint likhein, location daalein, Submit karein. Neeche saari entries dikhengi.</p>
+
+    <div class="card">
+      <h2>Feedback form</h2>
+      <form id="form">
+        <label>Complaint / Feedback (required)</label>
+        <textarea id="text" placeholder="e.g. Bus was very late. Seats were dirty. Driver was rude." required></textarea>
+        <div class="row">
+          <div class="field">
+            <label>Latitude</label>
+            <input type="number" id="lat" step="any" placeholder="30.7333" required>
+          </div>
+          <div class="field">
+            <label>Longitude</label>
+            <input type="number" id="lon" step="any" placeholder="76.7794" required>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+          <button type="button" class="btn btn-secondary" id="locationBtn">Use my location</button>
+        </div>
+      </form>
+      <div id="msg" class="msg" style="display:none;"></div>
+    </div>
+
+    <div class="card">
+      <h2>Saari entries</h2>
+      <div class="toolbar">
+        <button type="button" class="btn btn-secondary" id="refreshBtn">Refresh list</button>
+      </div>
+      <div id="tableWrap">
+        <p id="loading">Loading…</p>
+        <div class="table-wrap">
+          <table id="table" style="display:none;">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Feedback</th>
+                <th>Sentiment</th>
+                <th>Issues</th>
+                <th>Lat, Lon</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var api = window.location.origin;
+
+      function showMsg(ok, html) {
+        var el = document.getElementById('msg');
+        el.style.display = 'block';
+        el.className = 'msg ' + (ok ? 'ok' : 'err');
+        el.innerHTML = html;
+      }
+
+      document.getElementById('form').onsubmit = function(e) {
+        e.preventDefault();
+        var btn = document.getElementById('submitBtn');
+        var text = document.getElementById('text').value.trim();
+        var lat = parseFloat(document.getElementById('lat').value);
+        var lon = parseFloat(document.getElementById('lon').value);
+        if (!text || isNaN(lat) || isNaN(lon)) {
+          showMsg(false, 'Please fill complaint, latitude and longitude.');
+          return;
+        }
+        btn.disabled = true;
+        fetch(api + '/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text, latitude: lat, longitude: lon })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          showMsg(true, 'Saved! Sentiment: <strong>' + (d.sentiment || '') + '</strong>. Issues: ' +
+            (d.issues && d.issues.length ? d.issues.map(function(i) { return '<span class="tag">' + i + '</span>'; }).join(' ') : '–'));
+          document.getElementById('text').value = '';
+          document.getElementById('text').focus();
+          loadList();
+        })
+        .catch(function(err) {
+          showMsg(false, 'Error: ' + (err.message || 'Request failed'));
+        })
+        .finally(function() { btn.disabled = false; });
+      };
+
+      document.getElementById('locationBtn').onclick = function() {
+        if (!navigator.geolocation) {
+          showMsg(false, 'Geolocation not supported.');
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          function(p) {
+            document.getElementById('lat').value = p.coords.latitude.toFixed(4);
+            document.getElementById('lon').value = p.coords.longitude.toFixed(4);
+            showMsg(true, 'Location set.');
+          },
+          function() { showMsg(false, 'Could not get location.'); }
+        );
+      };
+
+      function loadList() {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('table').style.display = 'none';
+        fetch(api + '/feedback')
+          .then(function(r) { return r.json(); })
+          .then(function(list) {
+            document.getElementById('loading').style.display = 'none';
+            var tbody = document.getElementById('tbody');
+            tbody.innerHTML = '';
+            if (!list || list.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No entries yet. Add one above.</td></tr>';
+            } else {
+              list.forEach(function(r) {
+                var tr = document.createElement('tr');
+                var issues = (r.issues && r.issues.length) ? r.issues.map(function(i) { return '<span class="small-tag">' + i + '</span>'; }).join(' ') : '–';
+                var sent = (r.sentiment || '').toLowerCase();
+                tr.innerHTML = '<td>' + r.id + '</td><td>' + (r.text || '').slice(0, 80) + (r.text && r.text.length > 80 ? '…' : '') + '</td><td class="sentiment ' + sent + '">' + (r.sentiment || '') + '</td><td class="issues-cell">' + issues + '</td><td>' + (r.latitude != null ? r.latitude.toFixed(3) : '') + ', ' + (r.longitude != null ? r.longitude.toFixed(3) : '') + '</td>';
+                tbody.appendChild(tr);
+              });
+            }
+            document.getElementById('table').style.display = 'table';
+          })
+          .catch(function() {
+            document.getElementById('loading').textContent = 'Error loading list.';
+            document.getElementById('loading').style.display = 'block';
+          });
+      }
+
+      document.getElementById('refreshBtn').onclick = loadList;
+      loadList();
+    })();
+  </script>
+</body>
+</html>
