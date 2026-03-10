@@ -1,11 +1,31 @@
-import pandas as pd
+import csv
+from typing import Any, Dict, List
+
+import numpy as np
 from sklearn.cluster import DBSCAN
 
 def run_dbscan(csv_path):
-    df = pd.read_csv(csv_path)
-    coords = df[['latitude', 'longitude']]
-    df['cluster'] = DBSCAN(eps=0.01, min_samples=2).fit_predict(coords)
-    return df
+    """
+    Run DBSCAN on a CSV file that has `latitude` and `longitude` columns.
+    Returns rows as dicts with an extra `cluster` field.
+    """
+    rows: List[Dict[str, Any]] = []
+    coords: List[List[float]] = []
+    with open(csv_path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for r in reader:
+            lat = float(r["latitude"])
+            lon = float(r["longitude"])
+            rows.append(r)
+            coords.append([lat, lon])
+
+    if not coords:
+        return []
+
+    labels = DBSCAN(eps=0.01, min_samples=2).fit_predict(np.asarray(coords))
+    for r, label in zip(rows, labels.tolist()):
+        r["cluster"] = int(label)
+    return rows
 
 
 def run_dbscan_on_records(records):
@@ -15,7 +35,6 @@ def run_dbscan_on_records(records):
     """
     if not records:
         return []
-    df = pd.DataFrame([{"latitude": r.latitude, "longitude": r.longitude} for r in records])
-    coords = df[["latitude", "longitude"]]
+    coords = np.asarray([[r.latitude, r.longitude] for r in records], dtype=float)
     labels = DBSCAN(eps=0.01, min_samples=2).fit_predict(coords)
     return labels.tolist()
